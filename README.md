@@ -58,7 +58,7 @@ The API uses JWT authentication. Obtain an access token by making a POST request
 ```bash
 curl -X POST https://localhost:9090/api/auth/token \
   -H "Content-Type: application/json" \
-  -d '{"grant_type": "client_credentials", "client_id": "client_id", "client_secret": "client_secret"}'
+  -d '{"grant_type": "client_credentials", "client_id": "client", "client_secret": "secret"}'
 ```
 
 Use the returned `access_token` in the Authorization header for subsequent requests:
