@@ -40,7 +40,8 @@ app.post('/api/auth/token', (req, res) => {
   const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
 
   if (grant_type === 'client_credentials' && client_id === AUTH_CLIENT && client_secret === AUTH_SECRET) {
-    const token = jwt.sign({ client_id }, JWT_SECRET, { expiresIn: '1h' });
+    const payload = { sub: client_id };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
     res.json({ access_token: token, token_type: 'bearer', expires_in: 3600 });
   } else {
     res.status(400).json({ error: 'invalid_grant' });
