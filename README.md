@@ -21,13 +21,13 @@ Features JWT authentication and HTTPS support.
 
 The application uses the following environment variables:
 
-- `JWT_SECRET`: Secret key for JWT token signing (default: 'your_super_secret_key')
-- `AUTH_CLIENT`: Client ID for authentication (default: 'client')
-- `AUTH_SECRET`: Client secret for authentication (default: 'secret')
 - `PORT`: Port number for the HTTPS server (default: 9090)
 - `HOST`: Host address for the server (default: 'localhost')
+- `AUTH_CLIENT`: Client ID for authentication (default: 'client')
+- `AUTH_SECRET`: Client secret for authentication (default: 'secret')
 - `KEY_FILE`: Path to the private key file for HTTPS (default: 'certs/key.pem')
 - `CERT_FILE`: Path to the certificate file for HTTPS (default: 'certs/cert.pem')
+- `JWT_SECRET`: Secret key for JWT token signing (default: 'your_super_secret_key')
 
 ## Installation
 
