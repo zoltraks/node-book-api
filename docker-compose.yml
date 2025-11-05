@@ -1,0 +1,13 @@
+services:
+  book-api:
+    build: .
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./certs:/app/certs
+    environment:
+      - JWT_SECRET=your_super_secret_key
+      - AUTH_CLIENT=client
+      - AUTH_SECRET=secret
+      - PORT=9090
+      - HOST=0.0.0.0
