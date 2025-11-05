@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "generate-certs": "node generate-certs.js",
     "start": "node index.js"
   },
   "keywords": [],
