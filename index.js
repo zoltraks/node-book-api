@@ -94,6 +94,11 @@ app.use('/api', authenticateJWT, router);
 const keyFile = process.env.KEY_FILE || 'certs/key.pem';
 const certFile = process.env.CERT_FILE || 'certs/cert.pem';
 
+if (!fs.existsSync(keyFile) || !fs.existsSync(certFile)) {
+  console.error('Certificate or private key file not found.\nPlease provide required certificate and private key files in PEM format.\nAlternatively run "npm run generate-certs" to generate default self-signed certificates.');
+  process.exit(1);
+}
+
 const options = {
   key: fs.readFileSync(keyFile),
   cert: fs.readFileSync(certFile),
