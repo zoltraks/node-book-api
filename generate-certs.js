@@ -7,12 +7,20 @@ require('dotenv').config();
 const keyFile = process.env.KEY_FILE || 'certs/key.pem';
 const certFile = process.env.CERT_FILE || 'certs/cert.pem';
 
+let exists = false;
+
 if (fs.existsSync(keyFile)) {
   console.log(`Private key file already exists: ${keyFile}`);
+  exists = true;
 }
 
 if (fs.existsSync(certFile)) {
   console.log(`Certificate file already exists: ${certFile}`);
+  exists = true;
+}
+
+if (exists) {
+  process.exit(1);
 }
 
 const keys = forge.pki.rsa.generateKeyPair(2048);
