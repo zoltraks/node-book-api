@@ -17,6 +17,18 @@ Features JWT authentication and HTTPS support.
 - Node.js (v14 or higher)
 - npm
 
+## Environment Variables
+
+The application uses the following environment variables:
+
+- `JWT_SECRET`: Secret key for JWT token signing (default: 'your_super_secret_key')
+- `AUTH_CLIENT`: Client ID for authentication (default: 'client')
+- `AUTH_SECRET`: Client secret for authentication (default: 'secret')
+- `PORT`: Port number for the HTTPS server (default: 9090)
+- `HOST`: Host address for the server (default: 'localhost')
+- `KEY_FILE`: Path to the private key file for HTTPS (default: 'certs/key.pem')
+- `CERT_FILE`: Path to the certificate file for HTTPS (default: 'certs/cert.pem')
+
 ## Installation
 
 1. Clone the repository:
