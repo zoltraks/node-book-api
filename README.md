@@ -34,8 +34,8 @@ The application uses the following environment variables:
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
-cd bookapi
+git clone git@github.com:zoltraks/node-book-api.git
+cd node-book-api
 ```
 
 2. Install dependencies:
@@ -47,15 +47,16 @@ npm install
 3. Generate SSL certificates (for HTTPS):
 
 ```bash
-mkdir certs
-openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem -days 365 -nodes
+npm run generate-certs
 ```
 
 ## Usage
 
-Start the server:
+1. Ensure SSL certificates are present (see Installation step 3).
+
+2. Start the server:
 ```bash
-node index.js
+npm start
 ```
 
 The API will be available at `https://localhost:9090`
@@ -83,6 +84,7 @@ Authorization: Bearer <access_token>
 Retrieves all books.
 
 **Response:**
+
 ```json
 {
   "value": [
@@ -105,6 +107,7 @@ Retrieves all books.
 Creates a new book.
 
 **Request Body:**
+
 ```json
 {
   "title": "Book Title",
@@ -113,6 +116,7 @@ Creates a new book.
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": 3,
@@ -132,9 +136,24 @@ The server includes request logging that outputs to the console, showing request
 - Self-signed certificates are used for HTTPS (use proper certificates in production)
 - Data is stored in memory and will be lost on server restart
 
+## Certificate Generation
+
+The `generate-certs.js` script generates self-signed SSL certificates for HTTPS support. It creates a private key and certificate pair in PEM format, valid for 10 years. The script checks if certificates already exist and exits with an error if they do, preventing accidental overwrites.
+
+To generate certificates:
+
+```bash
+npm run generate-certs
+```
+
+This will create `certs/key.pem` and `certs/cert.pem` files.
+
 ## Dependencies
 
 - express: Web framework
 - jsonwebtoken: JWT implementation
 - https: Built-in Node.js module for HTTPS
 - fs: Built-in Node.js module for file system operations
+- node-forge: For certificate generation
+- pem: For PEM format handling
+- self-signed: For self-signed certificate utilities
