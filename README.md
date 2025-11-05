@@ -129,13 +129,6 @@ Creates a new book.
 
 The server includes request logging that outputs to the console, showing request paths and payloads (truncated to 100 characters).
 
-## Security Notes
-
-- This is a demo application with hardcoded credentials
-- Uses a simple secret key for JWT signing (should use environment variables in production)
-- Self-signed certificates are used for HTTPS (use proper certificates in production)
-- Data is stored in memory and will be lost on server restart
-
 ## Certificate Generation
 
 The `generate-certs.js` script generates self-signed SSL certificates for HTTPS support. It creates a private key and certificate pair in PEM format, valid for 10 years. The script checks if certificates already exist and exits with an error if they do, preventing accidental overwrites.
