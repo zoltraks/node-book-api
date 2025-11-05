@@ -1,0 +1,128 @@
+# Book API
+
+A simple RESTful API for managing a collection of books, built with Node.js and Express.js.
+
+Features JWT authentication and HTTPS support.
+
+## Features
+
+- JWT-based authentication using client credentials flow
+- CRUD operations for books (currently supports GET and POST)
+- HTTPS server with self-signed certificates
+- Request logging middleware
+- In-memory data storage
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- npm
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd bookapi
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Generate SSL certificates (for HTTPS):
+
+```bash
+mkdir certs
+openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem -days 365 -nodes
+```
+
+## Usage
+
+Start the server:
+```bash
+node index.js
+```
+
+The API will be available at `https://localhost:9090`
+
+## Authentication
+
+The API uses JWT authentication. Obtain an access token by making a POST request to `/api/auth/token`:
+
+```bash
+curl -X POST https://localhost:9090/api/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"grant_type": "client_credentials", "client_id": "client_id", "client_secret": "client_secret"}'
+```
+
+Use the returned `access_token` in the Authorization header for subsequent requests:
+
+```
+Authorization: Bearer <access_token>
+```
+
+## API Endpoints
+
+### GET /api/books
+
+Retrieves all books.
+
+**Response:**
+```json
+{
+  "value": [
+    {
+      "id": 1,
+      "title": "The Lord of the Rings",
+      "author": "J.R.R. Tolkien"
+    },
+    {
+      "id": 2,
+      "title": "Pride and Prejudice",
+      "author": "Jane Austen"
+    }
+  ]
+}
+```
+
+### POST /api/books
+
+Creates a new book.
+
+**Request Body:**
+```json
+{
+  "title": "Book Title",
+  "author": "Author Name"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": 3,
+  "title": "Book Title",
+  "author": "Author Name"
+}
+```
+
+## Development
+
+The server includes request logging that outputs to the console, showing request paths and payloads (truncated to 100 characters).
+
+## Security Notes
+
+- This is a demo application with hardcoded credentials
+- Uses a simple secret key for JWT signing (should use environment variables in production)
+- Self-signed certificates are used for HTTPS (use proper certificates in production)
+- Data is stored in memory and will be lost on server restart
+
+## Dependencies
+
+- express: Web framework
+- jsonwebtoken: JWT implementation
+- https: Built-in Node.js module for HTTPS
+- fs: Built-in Node.js module for file system operations
