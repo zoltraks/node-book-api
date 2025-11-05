@@ -14,6 +14,7 @@ const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const app = express();
 
@@ -30,12 +31,15 @@ const logRequest = (req, res, next) => {
 
 app.use(logRequest);
 
-const JWT_SECRET = 'your_super_secret_key'; // In a real app, use an environment variable
+const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_key';
 
 app.post('/api/auth/token', (req, res) => {
   const { grant_type, client_id, client_secret } = req.body;
 
-  if (grant_type === 'client_credentials' && client_id === 'client_id' && client_secret === 'client_secret') {
+  const AUTH_CLIENT = process.env.AUTH_CLIENT || 'client';
+  const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
+
+  if (grant_type === 'client_credentials' && client_id === AUTH_CLIENT && client_secret === AUTH_SECRET) {
     const token = jwt.sign({ client_id }, JWT_SECRET, { expiresIn: '1h' });
     res.json({ access_token: token, token_type: 'bearer', expires_in: 3600 });
   } else {
@@ -85,16 +89,19 @@ const authenticateJWT = (req, res, next) => {
     }
 };
 
-
 app.use('/api', authenticateJWT, router);
 
+const keyFile = process.env.KEY_FILE || 'certs/key.pem';
+const certFile = process.env.CERT_FILE || 'certs/cert.pem';
+
 const options = {
-  key: fs.readFileSync('certs/key.pem'),
-  cert: fs.readFileSync('certs/cert.pem'),
+  key: fs.readFileSync(keyFile),
+  cert: fs.readFileSync(certFile),
 };
 
-const port = 9090;
+const port = process.env.PORT && process.env.PORT.trim() !== '' ? parseInt(process.env.PORT) : 9090;
+const host = process.env.HOST || 'localhost';
 
-https.createServer(options, app).listen(port, () => {
-  console.log(`BookAPI listening on https://localhost:${port}`);
+https.createServer(options, app).listen(port, host, () => {
+  console.log(`Book API listening on https://${host}:${port}`);
 });
