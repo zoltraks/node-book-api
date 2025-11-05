@@ -51,6 +51,26 @@ npm start
 
 The API will be available at `https://localhost:9090`
 
+## Docker
+
+The application can also be run using Docker.
+
+1. Generate SSL certificates (for HTTPS):
+
+```bash
+npm run generate-certs
+```
+
+2. Run the application with Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+The API will be available at `https://localhost:9090`
+
+The Dockerfile is provided for building the Docker image.
+
 ## Authentication
 
 The API uses JWT authentication. Obtain an access token by making a POST request to `/api/auth/token`:
