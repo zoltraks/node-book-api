@@ -157,3 +157,7 @@ This will create `certs/key.pem` and `certs/cert.pem` files.
 - node-forge: For certificate generation
 - pem: For PEM format handling
 - self-signed: For self-signed certificate utilities
+
+## Credits
+
+This project was created by Filip Golewski with Kilo Code assistance.
