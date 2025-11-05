@@ -143,4 +143,4 @@ This will create `certs/key.pem` and `certs/cert.pem` files.
 
 ## Credits
 
-This project was created by Filip Golewski with Kilo Code assistance.
+This project was created by Filip Golewski with Gemini CLI and Kilo Code assistance.
