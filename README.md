@@ -31,30 +31,20 @@ The application uses the following environment variables:
 
 ## Installation
 
-1. Clone the repository:
-
-```bash
-git clone git@github.com:zoltraks/node-book-api.git
-cd node-book-api
-```
-
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Generate SSL certificates (for HTTPS):
+2. Generate SSL certificates (for HTTPS):
 
 ```bash
 npm run generate-certs
 ```
 
-## Usage
+3. Start the server:
 
-1. Ensure SSL certificates are present (see Installation step 3).
-
-2. Start the server:
 ```bash
 npm start
 ```
