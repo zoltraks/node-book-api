@@ -29,12 +29,31 @@ const getTimestamp = () => {
   return `${hours}:${minutes}:${seconds}.${milliseconds} `;
 };
 
-const logRequest = (req, res, next) => {
-  console.log(`${getTimestamp()}Request Path: ${req.path}`);
-  if (req.body && Object.keys(req.body).length > 0) {
-    const payload = JSON.stringify(req.body);
-    console.log(`${getTimestamp()}Request Payload: ${payload.substring(0, 100)}${payload.length > 100 ? '...' : ''}`);
+const limitString = (str, limit) => {
+  if (limit === undefined || limit < 1 || str.length <= limit) {
+    return str;
   }
+  if (limit < 4) {
+    return '.'.repeat(limit);
+  }
+  const show = limit - 3;
+  const head = Math.floor(show / 2);
+  const tail = Math.ceil(show / 2);
+  return str.substring(0, head) + '...' + str.substring(str.length - tail);
+};
+
+const logRequest = (req, res, next) => {
+  const time = getTimestamp();
+  const method = req.method;
+  const path = req.path;
+  let logMessage = `${time}${method} ${path}`;
+
+  if (req.body && Object.keys(req.body).length > 0) {
+    const payload = limitString(JSON.stringify(req.body), 100);
+    logMessage += ` ${payload}`;
+  }
+
+  console.log(logMessage);
   next();
 };
 
