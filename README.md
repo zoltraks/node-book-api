@@ -12,6 +12,8 @@ Features JWT authentication and HTTPS support.
 - Request logging middleware
 - In-memory data storage
 
+See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.
+
 ## Prerequisites
 
 - Node.js (v14 or higher)
@@ -50,6 +52,16 @@ npm start
 ```
 
 The API will be available at `https://localhost:9090`
+
+## Development
+
+For development with automatic reloading on file changes:
+
+```bash
+npm run dev
+```
+
+This uses nodemon to watch for changes and automatically restart the server.
 
 ## Docker
 

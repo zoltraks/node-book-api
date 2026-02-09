@@ -31,6 +31,9 @@ const logRequest = (req, res, next) => {
 
 app.use(logRequest);
 
+// Serve static files from public directory
+app.use(express.static('public'));
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_key';
 
 app.post('/api/auth/token', (req, res) => {
@@ -74,20 +77,20 @@ router.post('/books', (req, res) => {
 });
 
 const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization;
 
-    if (authHeader) {
-        const token = authHeader.split(' ')[1];
-        jwt.verify(token, JWT_SECRET, (err, user) => {
-            if (err) {
-                return res.sendStatus(403);
-            }
-            req.user = user;
-            next();
-        });
-    } else {
-        res.sendStatus(401);
-    }
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+      req.user = user;
+      next();
+    });
+  } else {
+    res.sendStatus(401);
+  }
 };
 
 app.use('/api', authenticateJWT, router);
@@ -110,4 +113,5 @@ const host = process.env.HOST || 'localhost';
 
 https.createServer(options, app).listen(port, host, () => {
   console.log(`Book API listening on https://${host}:${port}`);
+  console.log(`OpenAPI specification: https://${host}:${port}/openapi.yaml`);
 });

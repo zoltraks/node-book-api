@@ -1,0 +1,181 @@
+openapi: 3.0.0
+info:
+  title: Book API
+  description: A simple RESTful API for managing a collection of books with JWT authentication
+  version: 1.0.0
+  contact:
+    name: Joe Doe
+servers:
+  - url: https://localhost:9090
+    description: Local development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from /api/auth/token endpoint
+
+  schemas:
+    Book:
+      type: object
+      required:
+        - id
+        - title
+        - author
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the book
+          example: 1
+        title:
+          type: string
+          description: Title of the book
+          example: "The Lord of the Rings"
+        author:
+          type: string
+          description: Author of the book
+          example: "J.R.R. Tolkien"
+
+    BookInput:
+      type: object
+      required:
+        - title
+        - author
+      properties:
+        title:
+          type: string
+          description: Title of the book
+          example: "Book Title"
+        author:
+          type: string
+          description: Author of the book
+          example: "Author Name"
+
+    BooksResponse:
+      type: object
+      properties:
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+
+    TokenRequest:
+      type: object
+      required:
+        - grant_type
+        - client_id
+        - client_secret
+      properties:
+        grant_type:
+          type: string
+          enum: [client_credentials]
+          description: OAuth 2.0 grant type
+          example: "client_credentials"
+        client_id:
+          type: string
+          description: Client identifier
+          example: "client"
+        client_secret:
+          type: string
+          description: Client secret
+          example: "secret"
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT access token
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        token_type:
+          type: string
+          description: Token type
+          example: "bearer"
+        expires_in:
+          type: integer
+          description: Token expiration time in seconds
+          example: 3600
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "invalid_grant"
+
+paths:
+  /api/auth/token:
+    post:
+      summary: Obtain JWT access token
+      description: Authenticate using client credentials flow to obtain a JWT token for API access
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/books:
+    get:
+      summary: Retrieve all books
+      description: Get a list of all books in the collection
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooksResponse'
+        '401':
+          description: Unauthorized - Missing or invalid token
+        '403':
+          description: Forbidden - Token verification failed
+
+    post:
+      summary: Create a new book
+      description: Add a new book to the collection
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '201':
+          description: Book successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad request - Title and author are required
+        '401':
+          description: Unauthorized - Missing or invalid token
+        '403':
+          description: Forbidden - Token verification failed
