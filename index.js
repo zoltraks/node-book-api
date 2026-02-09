@@ -20,11 +20,20 @@ const app = express();
 
 app.use(express.json());
 
+const getTimestamp = () => {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+  return `${hours}:${minutes}:${seconds}.${milliseconds} `;
+};
+
 const logRequest = (req, res, next) => {
-  console.log(`Request Path: ${req.path}`);
+  console.log(`${getTimestamp()}Request Path: ${req.path}`);
   if (req.body && Object.keys(req.body).length > 0) {
     const payload = JSON.stringify(req.body);
-    console.log(`Request Payload: ${payload.substring(0, 100)}${payload.length > 100 ? '...' : ''}`);
+    console.log(`${getTimestamp()}Request Payload: ${payload.substring(0, 100)}${payload.length > 100 ? '...' : ''}`);
   }
   next();
 };
