@@ -1,5 +1,10 @@
 # Changes
 
+## Version 1.1.1
+
+- Added timestamp with milliseconds to request logs for better debugging.
+- Added `PUT`, `PATCH`, and `DELETE` endpoints for full CRUD support on `/books/:id`.
+
 ## Version 1.1.0
 
 Development workflow improvements and API documentation since 1.0.0.

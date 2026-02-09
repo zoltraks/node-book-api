@@ -104,6 +104,52 @@ router.post('/books', (req, res) => {
   res.status(201).json(newBook);
 });
 
+router.put('/books/:id', (req, res) => {
+  const { id } = req.params;
+  const { title, author } = req.body;
+  const book = books.find(b => b.id === parseInt(id));
+
+  if (!book) {
+    return res.status(404).send('Book not found');
+  }
+
+  if (!title || !author) {
+    return res.status(400).send('Title and author are required');
+  }
+
+  book.title = title;
+  book.author = author;
+
+  res.status(200).json(book);
+});
+
+router.patch('/books/:id', (req, res) => {
+  const { id } = req.params;
+  const { title, author } = req.body;
+  const book = books.find(b => b.id === parseInt(id));
+
+  if (!book) {
+    return res.status(404).send('Book not found');
+  }
+
+  if (title) book.title = title;
+  if (author) book.author = author;
+
+  res.status(200).json(book);
+});
+
+router.delete('/books/:id', (req, res) => {
+  const { id } = req.params;
+  const bookIndex = books.findIndex(b => b.id === parseInt(id));
+
+  if (bookIndex === -1) {
+    return res.status(404).send('Book not found');
+  }
+
+  books.splice(bookIndex, 1);
+  res.sendStatus(204);
+});
+
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -141,5 +187,5 @@ const host = process.env.HOST || 'localhost';
 
 https.createServer(options, app).listen(port, host, () => {
   console.log(`Book API listening on https://${host}:${port}`);
-  console.log(`OpenAPI specification: https://${host}:${port}/openapi.yaml`);
+  console.log(`OpenAPI specification https://${host}:${port}/openapi.yaml`);
 });

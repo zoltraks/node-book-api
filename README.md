@@ -7,7 +7,7 @@ Features JWT authentication and HTTPS support.
 ## Features
 
 - JWT-based authentication using client credentials flow
-- CRUD operations for books (currently supports GET and POST)
+- CRUD operations for books (supports GET, POST, PUT, PATCH, DELETE)
 - HTTPS server with self-signed certificates
 - Request logging middleware
 - In-memory data storage
@@ -144,8 +144,62 @@ Creates a new book.
   "id": 3,
   "title": "Book Title",
   "author": "Author Name"
+  "author": "Author Name"
 }
 ```
+
+### PUT /api/books/:id
+
+Replaces an existing book.
+
+**Request Body:**
+
+```json
+{
+  "title": "New Title",
+  "author": "New Author"
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "id": 1,
+  "title": "New Title",
+  "author": "New Author"
+}
+```
+
+### PATCH /api/books/:id
+
+Updates an existing book.
+
+**Request Body:**
+
+```json
+{
+  "title": "Updated Title"
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "id": 1,
+  "title": "Updated Title",
+  "author": "J.R.R. Tolkien"
+}
+```
+
+### DELETE /api/books/:id
+
+Deletes a book.
+
+**Response (204 No Content):**
+
+*(No response body)*
 
 ## Development
 
