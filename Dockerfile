@@ -1,13 +1,16 @@
 FROM node:22-alpine
 
+ENV NODE_ENV=production
+
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-RUN npm install
+RUN npm ci --omit=dev
 
-COPY . .
+COPY index.js ./
+COPY public/ ./public/
 
 EXPOSE 9090
 
-CMD ["npm", "start"]
+CMD ["node", "index.js"]

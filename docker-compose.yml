@@ -6,8 +6,10 @@ services:
     volumes:
       - ./certs:/app/certs
     environment:
-      - JWT_SECRET=your_super_secret_key
-      - AUTH_CLIENT=client
-      - AUTH_SECRET=secret
       - PORT=9090
       - HOST=0.0.0.0
+      - JWT=your_super_secret_key
+      - CLIENT=client
+      - SECRET=secret
+      - KEY=certs/key.pem
+      - CERTIFICATE=certs/cert.pem

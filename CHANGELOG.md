@@ -1,5 +1,17 @@
 # Changes
 
+## Version 1.1.2
+
+- Renamed credential environment variables to `CLIENT`, `SECRET`, and `JWT` (from `AUTH_CLIENT`, `AUTH_SECRET`, `JWT_SECRET`).
+- Renamed certificate path variables to `KEY` and `CERTIFICATE` (from `KEY_FILE`, `CERT_FILE`). `KEY` is now optional - set it to an empty value when the `CERTIFICATE` file already contains the private key.
+- `docker-compose.yml` now declares every supported environment variable explicitly.
+- Dockerfile now copies only the runtime file set (`index.js`, `public/`, package files) and installs production dependencies via `npm ci --omit=dev`.
+- Moved certificate-generation packages (`node-forge`, `pem`, `self-signed`) to `devDependencies`, out of the production image.
+- Renamed `generate-certs.js` and its npm script to `generate-certificate`.
+- Added `.env.example` as a configuration template.
+- Added engineering standards under `docs/standard/`.
+- Updated dependencies: express 5.2.1, dotenv 17.4.2, jsonwebtoken 9.0.3, nodemon 3.1.14.
+
 ## Version 1.1.1
 
 - Added timestamp with milliseconds to request logs for better debugging.

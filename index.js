@@ -59,20 +59,18 @@ const logRequest = (req, res, next) => {
 
 app.use(logRequest);
 
-// Serve static files from public directory
 app.use(express.static('public'));
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_key';
+const JWT = process.env.JWT || 'your_super_secret_key';
+const CLIENT = process.env.CLIENT || 'client';
+const SECRET = process.env.SECRET || 'secret';
 
 app.post('/api/auth/token', (req, res) => {
   const { grant_type, client_id, client_secret } = req.body;
 
-  const AUTH_CLIENT = process.env.AUTH_CLIENT || 'client';
-  const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
-
-  if (grant_type === 'client_credentials' && client_id === AUTH_CLIENT && client_secret === AUTH_SECRET) {
+  if (grant_type === 'client_credentials' && client_id === CLIENT && client_secret === SECRET) {
     const payload = { sub: client_id };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, JWT, { expiresIn: '1h' });
     res.json({ access_token: token, token_type: 'bearer', expires_in: 3600 });
   } else {
     res.status(400).json({ error: 'invalid_grant' });
@@ -155,7 +153,7 @@ const authenticateJWT = (req, res, next) => {
 
   if (authHeader) {
     const token = authHeader.split(' ')[1];
-    jwt.verify(token, JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT, (err, user) => {
       if (err) {
         return res.sendStatus(403);
       }
@@ -169,18 +167,23 @@ const authenticateJWT = (req, res, next) => {
 
 app.use('/api', authenticateJWT, router);
 
-const keyFile = process.env.KEY_FILE || 'certs/key.pem';
-const certFile = process.env.CERT_FILE || 'certs/cert.pem';
+const certificate = process.env.CERTIFICATE || 'certs/cert.pem';
+const key = process.env.KEY !== undefined ? process.env.KEY : 'certs/key.pem';
 
-if (!fs.existsSync(keyFile) || !fs.existsSync(certFile)) {
-  console.error('Certificate or private key file not found.\nPlease provide required certificate and private key files in PEM format.\nAlternatively run "npm run generate-certs" to generate default self-signed certificates.');
+if (!fs.existsSync(certificate) || (key && !fs.existsSync(key))) {
+  console.error('Certificate or private key file not found.\nPlease provide required certificate and private key files in PEM format.\nAlternatively run "npm run generate-certificate" to generate default self-signed certificates.');
   process.exit(1);
 }
 
 const options = {
-  key: fs.readFileSync(keyFile),
-  cert: fs.readFileSync(certFile),
+  key: fs.readFileSync(key || certificate),
+  cert: fs.readFileSync(certificate),
 };
+
+if (!key && !options.key.includes('PRIVATE KEY')) {
+  console.error('Certificate file does not contain a private key.\nProvide a private key file via the KEY environment variable or include the key in the certificate PEM file.');
+  process.exit(1);
+}
 
 const port = process.env.PORT && process.env.PORT.trim() !== '' ? parseInt(process.env.PORT) : 9090;
 const host = process.env.HOST || 'localhost';

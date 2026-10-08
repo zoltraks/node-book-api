@@ -21,15 +21,15 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.
 
 ## Environment Variables
 
-The application uses the following environment variables:
+The application uses the following environment variables, which can be set in a `.env` file (see `.env.example` for a template):
 
 - `PORT`: Port number for the HTTPS server (default: 9090)
 - `HOST`: Host address for the server (default: 'localhost')
-- `AUTH_CLIENT`: Client ID for authentication (default: 'client')
-- `AUTH_SECRET`: Client secret for authentication (default: 'secret')
-- `KEY_FILE`: Path to the private key file for HTTPS (default: 'certs/key.pem')
-- `CERT_FILE`: Path to the certificate file for HTTPS (default: 'certs/cert.pem')
-- `JWT_SECRET`: Secret key for JWT token signing (default: 'your_super_secret_key')
+- `CLIENT`: Client ID for authentication (default: 'client')
+- `SECRET`: Client secret for authentication (default: 'secret')
+- `CERTIFICATE`: Path to the certificate file for HTTPS, which may also contain the private key (default: 'certs/cert.pem')
+- `KEY`: Path to the private key file for HTTPS, optional - set to an empty value when `CERTIFICATE` already contains the key (default: 'certs/key.pem')
+- `JWT`: Secret key for JWT token signing (default: 'your_super_secret_key')
 
 ## Installation
 
@@ -39,13 +39,19 @@ The application uses the following environment variables:
 npm install
 ```
 
-2. Generate SSL certificates (for HTTPS):
+2. Create a `.env` file (optional - the defaults work as-is):
 
 ```bash
-npm run generate-certs
+cp .env.example .env
 ```
 
-3. Start the server:
+3. Generate SSL certificates (for HTTPS):
+
+```bash
+npm run generate-certificate
+```
+
+4. Start the server:
 
 ```bash
 npm start
@@ -70,7 +76,7 @@ The application can also be run using Docker.
 1. Generate SSL certificates (for HTTPS):
 
 ```bash
-npm run generate-certs
+npm run generate-certificate
 ```
 
 2. Run the application with Docker Compose:
@@ -98,6 +104,8 @@ Use the returned `access_token` in the Authorization header for subsequent reque
 ```
 Authorization: Bearer <access_token>
 ```
+
+**Note:** Request bodies are logged to the console, including the `client_secret` sent to `/api/auth/token`. This is intentional - the project is an educational and proof-of-concept example where visible credentials aid debugging. Do not reuse this pattern in production services.
 
 ## API Endpoints
 
@@ -201,18 +209,43 @@ Deletes a book.
 
 *(No response body)*
 
+## Smoke Test
+
+A quick manual pass over the API surface - `curl -k` skips certificate verification for the self-signed cert:
+
+```bash
+# obtain a token
+TOKEN=$(curl -sk -X POST https://localhost:9090/api/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"grant_type":"client_credentials","client_id":"client","client_secret":"secret"}' \
+  | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
+
+# exercise the routes
+curl -k https://localhost:9090/api/books -H "Authorization: Bearer $TOKEN"          # 200 list
+curl -k -X POST https://localhost:9090/api/books -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" -d '{"title":"T","author":"A"}'                # 201 created
+curl -k -X DELETE https://localhost:9090/api/books/3 -H "Authorization: Bearer $TOKEN" # 204 deleted
+curl -k https://localhost:9090/openapi.yaml                                          # 200 spec
+```
+
+Negative checks worth a look:
+
+- no `Authorization` header returns `401`, a bad token returns `403`
+- wrong `client_id` or `client_secret` returns `400` with `invalid_grant`
+- a book body missing `title` or `author` returns `400`, a missing book id returns `404`
+
 ## Development
 
 The server includes request logging that outputs to the console, showing request paths and payloads (truncated to 100 characters).
 
 ## Certificate Generation
 
-The `generate-certs.js` script generates self-signed SSL certificates for HTTPS support. It creates a private key and certificate pair in PEM format, valid for 10 years. The script checks if certificates already exist and exits with an error if they do, preventing accidental overwrites.
+The `generate-certificate.js` script generates self-signed SSL certificates for HTTPS support. It creates a private key and certificate pair in PEM format, valid for 10 years. The script checks if certificates already exist and exits with an error if they do, preventing accidental overwrites.
 
 To generate certificates:
 
 ```bash
-npm run generate-certs
+npm run generate-certificate
 ```
 
 This will create `certs/key.pem` and `certs/cert.pem` files.
@@ -223,9 +256,22 @@ This will create `certs/key.pem` and `certs/cert.pem` files.
 - jsonwebtoken: JWT implementation
 - https: Built-in Node.js module for HTTPS
 - fs: Built-in Node.js module for file system operations
-- node-forge: For certificate generation
-- pem: For PEM format handling
-- self-signed: For self-signed certificate utilities
+- node-forge: For certificate generation (development only)
+- pem: For PEM format handling (development only)
+- self-signed: For self-signed certificate utilities (development only)
+
+## Engineering Standards
+
+Rules for code and specification changes live in `docs/standard/`:
+
+- `javascript-express-development.md` - conventions for this JavaScript/Express service
+- `openapi-general-development.md` - rules for the `public/openapi.yaml` contract
+
+## Versioning
+
+The version lives in `package.json` and is mirrored by a section in `CHANGELOG.md`.
+
+The patch component is incremented by default. Each component is a single decimal digit and overflow carries to the left: `1.1.1` becomes `1.1.2`, `1.0.9` becomes `1.1.0`, `9.9.9` becomes `10.0.0`.
 
 ## Credits
 

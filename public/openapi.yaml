@@ -144,6 +144,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
 
   /api/books:
     get:
@@ -164,6 +166,8 @@ paths:
           description: Unauthorized - Missing or invalid token
         '403':
           description: Forbidden - Token verification failed
+        '500':
+          description: Internal server error
 
     post:
       summary: Create a new book
@@ -191,6 +195,8 @@ paths:
           description: Unauthorized - Missing or invalid token
         '403':
           description: Forbidden - Token verification failed
+        '500':
+          description: Internal server error
 
   /api/books/{id}:
     put:
@@ -227,6 +233,8 @@ paths:
           description: Unauthorized - Missing or invalid token
         '403':
           description: Forbidden - Token verification failed
+        '500':
+          description: Internal server error
 
     patch:
       summary: Update a book
@@ -260,6 +268,8 @@ paths:
           description: Unauthorized - Missing or invalid token
         '403':
           description: Forbidden - Token verification failed
+        '500':
+          description: Internal server error
 
     delete:
       summary: Delete a book
@@ -284,3 +294,5 @@ paths:
           description: Unauthorized - Missing or invalid token
         '403':
           description: Forbidden - Token verification failed
+        '500':
+          description: Internal server error
