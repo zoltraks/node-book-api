@@ -1,5 +1,14 @@
 # Changes
 
+## Version 1.1.3
+
+- Added verbose mode: startup output such as the dotenv injection notice is now suppressed unless the `--verbose` command line flag is passed or the `VERBOSE` environment variable is enabled (`0`, `false`, `no`, `off`, and empty values disable it).
+- `docker-compose.yml` declares the new `VERBOSE` variable.
+- Added a Quick Start section to the README with an end-to-end setup and verification example on port `50505`.
+- Changed the startup message to `Service listening on https://<host>:<port>`.
+- Replaced `node-forge` with `@peculiar/x509` (plus `reflect-metadata`) for certificate generation and removed the unused `pem` and `self-signed` dev dependencies, eliminating all `node-forge` security advisories.
+- Replaced `nodemon` with built-in `node --watch` for the `dev` script, removing the vulnerable `chokidar`/`braces` dependency chain - `npm audit` now reports zero vulnerabilities.
+
 ## Version 1.1.2
 
 - Renamed credential environment variables to `CLIENT`, `SECRET`, and `JWT` (from `AUTH_CLIENT`, `AUTH_SECRET`, `JWT_SECRET`).

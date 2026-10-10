@@ -14,6 +14,57 @@ Features JWT authentication and HTTPS support.
 
 See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.
 
+## Quick Start
+
+The commands below configure and run the service on port `50505`:
+
+```bash
+# install dependencies
+npm install
+
+# create the configuration file
+cat > .env <<'EOF'
+PORT=50505
+HOST=localhost
+CLIENT=client
+SECRET=secret
+JWT=your_super_secret_key
+CERTIFICATE=certs/cert.pem
+KEY=certs/key.pem
+EOF
+
+# generate a self-signed certificate pair in certs/
+npm run generate-certificate
+
+# start in the foreground
+npm start
+
+# or detached, logging to server.log
+node index.js > server.log 2>&1 &
+```
+
+The API listens at `https://localhost:50505`.
+
+Verify it with a token request and an authenticated call:
+
+```bash
+TOKEN=$(curl -sk -X POST https://localhost:50505/api/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"grant_type":"client_credentials","client_id":"client","client_secret":"secret"}' \
+  | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
+
+curl -k https://localhost:50505/api/books -H "Authorization: Bearer $TOKEN"
+```
+
+To stop a detached instance on Windows, find its PID and kill it:
+
+```bash
+netstat -ano | grep 50505
+taskkill //F //PID <pid>
+```
+
+Pass `--verbose` or set `VERBOSE=1` to see the dotenv injection notice at startup.
+
 ## Prerequisites
 
 - Node.js (v14 or higher)
@@ -30,34 +81,22 @@ The application uses the following environment variables, which can be set in a 
 - `CERTIFICATE`: Path to the certificate file for HTTPS, which may also contain the private key (default: 'certs/cert.pem')
 - `KEY`: Path to the private key file for HTTPS, optional - set to an empty value when `CERTIFICATE` already contains the key (default: 'certs/key.pem')
 - `JWT`: Secret key for JWT token signing (default: 'your_super_secret_key')
+- `VERBOSE`: Enables verbose output, including the dotenv injection notice (default: disabled). The values `0`, `false`, `no`, `off`, and empty are treated as disabled, and any other value enables it. Verbose mode can also be enabled with the `--verbose` command line flag.
 
 ## Installation
 
-1. Install dependencies:
+The Quick Start above pins the service to port `50505`.
+
+For the default configuration, install dependencies and copy `.env.example` to `.env` instead of writing it by hand:
 
 ```bash
 npm install
-```
-
-2. Create a `.env` file (optional - the defaults work as-is):
-
-```bash
 cp .env.example .env
 ```
 
-3. Generate SSL certificates (for HTTPS):
+Then generate the certificate and start the server as shown in the Quick Start.
 
-```bash
-npm run generate-certificate
-```
-
-4. Start the server:
-
-```bash
-npm start
-```
-
-The API will be available at `https://localhost:9090`
+The API will be available at `https://localhost:9090` when `PORT` is left unset.
 
 ## Development
 
@@ -67,7 +106,9 @@ For development with automatic reloading on file changes:
 npm run dev
 ```
 
-This uses nodemon to watch for changes and automatically restart the server.
+This uses `node --watch` to watch for changes and automatically restart the server.
+
+The server includes request logging that outputs to the console, showing request paths and payloads (truncated to 100 characters).
 
 ## Docker
 
@@ -152,7 +193,6 @@ Creates a new book.
   "id": 3,
   "title": "Book Title",
   "author": "Author Name"
-  "author": "Author Name"
 }
 ```
 
@@ -221,7 +261,7 @@ TOKEN=$(curl -sk -X POST https://localhost:9090/api/auth/token \
   | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
 
 # exercise the routes
-curl -k https://localhost:9090/api/books -H "Authorization: Bearer $TOKEN"          # 200 list
+curl -k https://localhost:9090/api/books -H "Authorization: Bearer $TOKEN"           # 200 list
 curl -k -X POST https://localhost:9090/api/books -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" -d '{"title":"T","author":"A"}'                # 201 created
 curl -k -X DELETE https://localhost:9090/api/books/3 -H "Authorization: Bearer $TOKEN" # 204 deleted
@@ -233,10 +273,6 @@ Negative checks worth a look:
 - no `Authorization` header returns `401`, a bad token returns `403`
 - wrong `client_id` or `client_secret` returns `400` with `invalid_grant`
 - a book body missing `title` or `author` returns `400`, a missing book id returns `404`
-
-## Development
-
-The server includes request logging that outputs to the console, showing request paths and payloads (truncated to 100 characters).
 
 ## Certificate Generation
 
@@ -256,9 +292,7 @@ This will create `certs/key.pem` and `certs/cert.pem` files.
 - jsonwebtoken: JWT implementation
 - https: Built-in Node.js module for HTTPS
 - fs: Built-in Node.js module for file system operations
-- node-forge: For certificate generation (development only)
-- pem: For PEM format handling (development only)
-- self-signed: For self-signed certificate utilities (development only)
+- @peculiar/x509: For self-signed certificate generation (development only)
 
 ## Engineering Standards
 
@@ -273,6 +307,10 @@ The version lives in `package.json` and is mirrored by a section in `CHANGELOG.m
 
 The patch component is incremented by default. Each component is a single decimal digit and overflow carries to the left: `1.1.1` becomes `1.1.2`, `1.0.9` becomes `1.1.0`, `9.9.9` becomes `10.0.0`.
 
+## License
+
+This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) for the full text.
+
 ## Credits
 
-This project was created by Filip Golewski with Gemini CLI and Kilo Code assistance.
+This project was created by Filip Golewski for educational purposes.

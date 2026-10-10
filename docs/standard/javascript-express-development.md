@@ -105,7 +105,7 @@ The following are the authoritative sources for JavaScript and Express developme
 - [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices) - community-curated structure and architecture practices.
 - [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) - JWT signing and verification.
 - [dotenv](https://github.com/motdotla/dotenv) - environment file loading.
-- [node-forge](https://github.com/digitalbazaar/forge) - certificate and PKCS tooling for development utilities.
+- [@peculiar/x509](https://github.com/PeculiarVentures/x509) - X.509 certificate tooling for development utilities.
 
 ## Language Version
 
@@ -123,8 +123,8 @@ Do not introduce TypeScript or a build step without an explicit user decision, b
 - Built-in `https` module for TLS termination.
 - `jsonwebtoken` for JWT issuing and verification.
 - `dotenv` for `.env` loading.
-- `node-forge` for certificate and key material in development utilities.
-- `nodemon` for development reload.
+- `@peculiar/x509` for self-signed certificate generation in development utilities.
+- Built-in `node --watch` for development reload.
 
 ## Project Structure
 
@@ -241,7 +241,7 @@ When a test suite is added, use the built-in `node:test` runner and `node --test
 
 ## Build
 
-- Development start uses `nodemon` for reload on file changes.
+- Development start uses `node --watch` for reload on file changes.
 - Production start runs the entry point with plain `node`.
 - A container image copies only the files required at runtime, installs with `npm ci --omit=dev`, and runs the entry point directly - development utilities and their dependencies stay out of the image.
 
@@ -256,8 +256,7 @@ Common dependencies:
 | `express`      | HTTP framework                | runtime     |
 | `jsonwebtoken` | JWT signing and verification  | runtime     |
 | `dotenv`       | Environment file loading      | runtime     |
-| `node-forge`   | Certificate and key utilities | development |
-| `nodemon`      | Development reload            | development |
+| `@peculiar/x509` | Self-signed certificate generation | development |
 
 Prefer versions published at least 7 days ago - avoid floating ranges that auto-resolve to brand-new releases.
 

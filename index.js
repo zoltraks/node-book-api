@@ -14,7 +14,11 @@ const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+
+const verbose = process.argv.includes('--verbose') ||
+  !['', '0', 'false', 'no', 'off'].includes((process.env.VERBOSE || '').trim().toLowerCase());
+
+require('dotenv').config({ quiet: !verbose });
 
 const app = express();
 
@@ -189,6 +193,6 @@ const port = process.env.PORT && process.env.PORT.trim() !== '' ? parseInt(proce
 const host = process.env.HOST || 'localhost';
 
 https.createServer(options, app).listen(port, host, () => {
-  console.log(`Book API listening on https://${host}:${port}`);
+  console.log(`Service listening on https://${host}:${port}`);
   console.log(`OpenAPI specification https://${host}:${port}/openapi.yaml`);
 });

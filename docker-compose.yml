@@ -13,3 +13,4 @@ services:
       - SECRET=secret
       - KEY=certs/key.pem
       - CERTIFICATE=certs/cert.pem
+      - VERBOSE=0
