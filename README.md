@@ -298,6 +298,7 @@ This will create `certs/key.pem` and `certs/cert.pem` files.
 
 Rules for code and specification changes live in `docs/standard/`:
 
+- `javascript-general-development.md` - base JavaScript runtime and tooling rules
 - `javascript-express-development.md` - conventions for this JavaScript/Express service
 - `openapi-general-development.md` - rules for the `public/openapi.yaml` contract
 
